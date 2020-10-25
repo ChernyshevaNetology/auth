@@ -1,14 +1,20 @@
 import { axios } from '../app/axiosConfig';
+import { history } from '../app/history';
 
-export const CLEAR_POKEMONS_LIST = 'CLEAR_POKEMONS_LIST';
-export const SET_ABILITY_INFO = 'SET_ABILITY_INFO';
-export const SET_POKEMONS_LIST = 'SET_POKEMONS_LIST';
-export const SET_POKEMON_DETAILED_INFO = 'SET_POKEMON_DETAILED_INFO';
+export const SET_USERS_LIST = 'SET_USERS_LIST';
+export const SET_SEARCH_KEY = 'SET_SEARCH_KEY';
 export const SET_LOADING = 'SET_LOADING';
-export const SET_FAILED_REQUEST = 'SET_FAILED_REQUEST';
+export const SET_ERROR_REQUEST = 'SET_ERROR_REQUEST';
+export const SET_SUCCESS_REQUEST = 'SET_SUCCESS_REQUEST';
 
-export const clearPokemosList = () => ({
-  type: CLEAR_POKEMONS_LIST,
+export const setUsersList = (users) => ({
+  type: SET_USERS_LIST,
+  payload: users,
+});
+
+export const setSearchKey = (key) => ({
+  type: SET_SEARCH_KEY,
+  payload: key,
 });
 
 export const setLoading = (value) => ({
@@ -16,68 +22,64 @@ export const setLoading = (value) => ({
   payload: value,
 });
 
-export const setFailedRequest = (value) => ({
-  type: SET_FAILED_REQUEST,
-  payload: value,
+export const setErrorRequest = (status) => ({
+  type: SET_ERROR_REQUEST,
+  payload: status,
 });
 
-export const setPokemonsList = (pokemons) => ({
-  type: SET_POKEMONS_LIST,
-  payload: pokemons,
+export const setSuccessRequest = (status) => ({
+  type: SET_SUCCESS_REQUEST,
+  payload: status,
 });
 
-export const setPokemonDetailedInfo = (detailedInfo) => ({
-  type: SET_POKEMON_DETAILED_INFO,
-  payload: detailedInfo,
-});
-
-export const setAbilityInfo = (abilityInfo) => ({
-  type: SET_ABILITY_INFO,
-  payload: abilityInfo,
-});
-
-export const loadPokemons = async (dispatch, offset) => {
+export const login = async (dispatch, userCredentials) => {
   dispatch(setLoading(true));
   try {
     const {
-      data: { results },
-    } = await axios.get(`/pokemon?limit=20&offset=${offset}`);
-    dispatch(setPokemonsList(results));
-    dispatch(setFailedRequest(false));
-    return Promise.resolve(results);
+      data: { token },
+    } = await axios.post('/api-token-auth/', userCredentials);
+    localStorage.setItem('authToken', token);
+    dispatch(setErrorRequest(false));
+    history.push('/users-list');
   } catch (e) {
-    dispatch(setFailedRequest(true));
-    return Promise.reject(e);
+    dispatch(setErrorRequest(true));
   } finally {
     dispatch(setLoading(false));
   }
 };
 
-export const loadPokemonDetailedInfo = async (dispatch, id) => {
+export const addUser = async (dispatch, userCredentials) => {
   dispatch(setLoading(true));
+  const token = localStorage.getItem('authToken');
   try {
-    const { data } = await axios.get(`/pokemon/${id}`);
-    dispatch(setPokemonDetailedInfo(data));
-    dispatch(setFailedRequest(false));
-    return Promise.resolve(data);
+    await axios.post('/api/v1/users/', userCredentials, {
+      headers: {
+        Authorization: `token ${token}`,
+      },
+    });
+    dispatch(setErrorRequest(false));
+    dispatch(setSuccessRequest(true));
   } catch (e) {
-    dispatch(setFailedRequest(true));
-    return Promise.reject(e);
+    dispatch(setErrorRequest(true));
+    dispatch(setSuccessRequest(false));
   } finally {
     dispatch(setLoading(false));
   }
 };
 
-export const loadAbilityInfo = async (dispatch, id) => {
+export const loadUsers = async (dispatch) => {
   dispatch(setLoading(true));
+  const token = localStorage.getItem('authToken');
   try {
-    const { data } = await axios.get(`/ability/${id}`);
-    dispatch(setAbilityInfo(data));
-    dispatch(setFailedRequest(false));
-    return Promise.resolve(data);
+    const { data } = await axios.get('/api/v1/users/', {
+      headers: {
+        Authorization: `token ${token}`,
+      },
+    });
+    dispatch(setUsersList(data));
+    dispatch(setErrorRequest(false));
   } catch (e) {
-    dispatch(setFailedRequest(true));
-    return Promise.reject(e);
+    dispatch(setErrorRequest(true));
   } finally {
     dispatch(setLoading(false));
   }

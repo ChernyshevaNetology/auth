@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 const Layout = ({ children }) => {
   return (
     <Container className="layout">
-      <Grid>
+      <Grid style={{ height: '100vh' }} verticalAlign="middle">
         <Grid.Column>{children}</Grid.Column>
       </Grid>
     </Container>

@@ -1,35 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Grid, Message } from 'semantic-ui-react';
-import { isEmpty } from 'lodash';
-
-import { Layout } from '../../components/Layout';
-import { PokemonsList } from '../../components/PokemonsList';
-import { Search } from '../../components/Search';
-
-import { clearPokemosList, loadPokemons } from '../../actions/app';
-import { filterPokemons } from '../../common/helpers';
-import { INCRIMENT_OFFSET } from '../../common/constants';
+import { login } from '../../actions/app';
 import LoginForm from '../../components/LoginForm';
+import { Grid, Message } from 'semantic-ui-react';
 
 const LoginPage = () => {
-  // const dispatch = useDispatch();
-  // const [offset, setOffset] = useState(0);
-  // const [searchKey, setSearchKey] = useState('');
-
-  // useEffect(() => {
-  //   dispatch(clearPokemosList());
-  // }, [dispatch]);
-
-  // useEffect(() => {
-  //   loadPokemons(dispatch, offset);
-  // }, [dispatch, offset]);
+  const dispatch = useDispatch();
+  const requestError = useSelector(({ app: { requestError } }) => requestError);
 
   const handleSubmit = (values) => {
-    console.dir(values);
+    login(dispatch, values);
   };
 
-  return <LoginForm onSubmit={handleSubmit} />;
+  return (
+    <Grid textAlign="center" style={{ height: '100vh' }} verticalAlign="middle">
+      <Grid.Column style={{ maxWidth: 450 }}>
+        <LoginForm onSubmit={handleSubmit} />
+        {requestError && (
+          <Message
+            negative
+            header="Authorization failed"
+            content="Please try again"
+          />
+        )}
+      </Grid.Column>
+    </Grid>
+  );
 };
 
 export { LoginPage };

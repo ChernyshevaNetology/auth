@@ -1,24 +1,23 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { Input } from 'semantic-ui-react';
-import PropTypes from 'prop-types';
+import { setSearchKey } from '../../actions/app';
 
-const Search = ({ setSearchKey }) => {
+const Search = () => {
+  const dispatch = useDispatch();
   const handleSearch = ({ target: { value } }) => {
-    setSearchKey(value);
+    dispatch(setSearchKey(value));
   };
 
   return (
     <Input
-      className="search-input"
-      placeholder="Search..."
+      icon="users"
       onChange={handleSearch}
+      iconPosition="left"
+      placeholder="Search users..."
       fluid
     />
   );
-};
-
-Search.propTypes = {
-  setSearchKey: PropTypes.func.isRequired,
 };
 
 export { Search };

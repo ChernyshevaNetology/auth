@@ -1,57 +1,48 @@
 import {
-  SET_ABILITY_INFO,
-  CLEAR_POKEMONS_LIST,
   SET_LOADING,
-  SET_FAILED_REQUEST,
-  SET_POKEMON_DETAILED_INFO,
-  SET_POKEMONS_LIST,
+  SET_ERROR_REQUEST,
+  SET_SUCCESS_REQUEST,
+  SET_USERS_LIST,
+  SET_SEARCH_KEY,
 } from '../actions/app';
 
 const initialState = {
-  pokemons: [],
-  pokemonInfo: null,
-  abilityInfo: null,
-  appReady: false,
   isLoading: false,
-  isError: false,
+  requestError: false,
+  requestSuccess: false,
+  usersList: null,
+  searchKey: null,
 };
 
 const appReducer = (state = initialState, { type, payload }) => {
   switch (type) {
-    case CLEAR_POKEMONS_LIST:
+    case SET_USERS_LIST:
       return {
         ...state,
-        pokemons: [],
+        usersList: [...payload],
       };
 
-    case SET_POKEMONS_LIST:
+    case SET_SEARCH_KEY:
       return {
         ...state,
-        pokemons: state.pokemons.concat(payload),
+        searchKey: payload,
       };
-
-    case SET_POKEMON_DETAILED_INFO:
-      return {
-        ...state,
-        pokemonInfo: payload,
-      };
-
-    case SET_ABILITY_INFO:
-      return {
-        ...state,
-        abilityInfo: payload,
-      };
-
     case SET_LOADING:
       return {
         ...state,
         isLoading: payload,
       };
 
-    case SET_FAILED_REQUEST:
+    case SET_ERROR_REQUEST:
       return {
         ...state,
-        isError: payload,
+        requestError: payload,
+      };
+
+    case SET_SUCCESS_REQUEST:
+      return {
+        ...state,
+        requestSuccess: payload,
       };
 
     default:
